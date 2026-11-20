@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Mercao</title>
+<style>
+:root{--bg:#fff6e8;--card:#ffffff;--tx:#2a1a10;--mu:#8a6f5a;--ac:#e8472b;--gr:#4f8a2b;--bd:#f0dcc0;--sun:#ffc83d;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#1c1511;--card:#2a1f18;--tx:#fbeedd;--mu:#bfa68f;--ac:#ff6a4d;--gr:#8fcf5a;--bd:#3c2d22;color-scheme:dark}}
+:root[data-theme=dark]{--bg:#1c1511;--card:#2a1f18;--tx:#fbeedd;--mu:#bfa68f;--ac:#ff6a4d;--gr:#8fcf5a;--bd:#3c2d22;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--tx);font:15px system-ui,-apple-system,"Segoe UI",sans-serif}
+#app{max-width:600px;margin:auto;padding:14px 14px 100px}
+.top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px}
+.logo{font:900 34px system-ui,-apple-system,sans-serif;letter-spacing:-1.5px;color:var(--ac);line-height:1}.logo b{color:var(--gr)}.tag{font-size:12px;color:var(--mu);margin-top:2px}
+.deco{font-size:26px;letter-spacing:2px}
+.seg{display:flex;gap:4px;background:var(--bd);padding:4px;border-radius:14px;margin-bottom:12px}.seg button{flex:1;border:0;background:none;padding:10px;border-radius:11px;color:var(--tx);font:700 14px inherit}.seg button.on{background:var(--ac);color:#fff}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:12px}
+.mu{color:var(--mu);font-size:13px}.ok{color:var(--gr)}.bad{color:var(--ac)}
+.r{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--bd)}.r:last-child{border:0}.m{flex:1;min-width:0}.m b{display:block}
+.big{font:900 26px system-ui,sans-serif;color:var(--gr)}
+button{font:inherit;cursor:pointer}.b1,.b2{padding:11px 14px;border-radius:12px;border:0;font-weight:700}.b1{background:var(--ac);color:#fff}.b2{background:var(--bd);color:var(--tx)}.b3{background:var(--gr);color:#fff;padding:9px 12px;border:0;border-radius:10px;font-weight:700}
+.row{display:flex;gap:8px;margin-top:8px}.row>*{flex:1}
+.q{width:34px;height:34px;border-radius:50%;border:2px solid var(--bd);background:var(--card);color:var(--tx);font-size:18px;line-height:1}
+.sm{background:none;border:0;color:var(--ac);font-weight:700;padding:4px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;border:0;color:var(--mu);padding:9px 0;font-size:11px;font-weight:600}nav button span{display:block;font-size:22px}nav button.on{color:var(--ac)}
+#sh{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;z-index:20}#sh.on{display:flex}
+.bx{background:var(--bg);width:100%;max-width:600px;margin:auto;border-radius:20px 20px 0 0;padding:18px;max-height:90vh;overflow:auto}
+input,select,textarea{width:100%;padding:12px;margin:5px 0;border:2px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);font:inherit}textarea{height:130px}h3{margin:0 0 8px}
+label.k{display:flex;align-items:center;gap:8px;padding:6px 0}label.k input{width:auto;margin:0}
+</style></head><body><div id="app"></div>
+<nav><button data-t="casa" onclick="T('casa')"><span>🏠</span>En casa</button><button data-t="super" onclick="T('super')"><span>🛒</span>Súper</button><button data-t="rec" onclick="T('rec')"><span>👩‍🍳</span>Recetas</button></nav><div id="sh"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),val=i=>$('#'+i).value;
+let db=null,SM=null,LM=null,IT=[],H='yo',tab='casa',ready=0,err='',ro=false,rec=null,RT='',RS='';
+const HN={yo:'Mi casa',ma:'Casa de mamá'},fm=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n||0),nf=n=>Math.round((n||0)*100)/100,nrm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(),mine=()=>IT.filter(i=>i.h==H).sort((a,b)=>a.n.localeCompare(b.n));
+async function W(f){try{await f()}catch(e){alert(/grant|permission|writer/i.test((e.code||'')+(e.message||''))?'No tienes permiso para editar. Pide que te den acceso de colaborador.':'No se pudo guardar: '+(e.message||e))}}
+const upd=(id,p)=>W(()=>db.doc('items/'+id).update(p));
+function sheet(h,ok,l){const s=$('#sh');s.innerHTML='<div class="bx">'+h+'<div class="row"><button class="b2" onclick="cl()">'+(ok?'Cancelar':'Cerrar')+'</button>'+(ok?'<button class="b1" id="ok">'+(l||'Guardar')+'</button>':'')+'</div></div>';s.className='on';if(ok)$('#ok').onclick=()=>{if(ok()!==false)cl()}}
+const cl=()=>$('#sh').className='',T=t=>{tab=t;draw()},SH=h=>{H=h;draw()};
+function draw(){document.querySelectorAll('nav button').forEach(b=>b.className=b.dataset.t==tab?'on':'');
+const hd=`<div class="top"><div><div class="logo">merca<b>o</b></div><div class="tag">Tu mercado, sin vueltas</div></div><div class="deco">🥑🍅🥕</div></div><div class="seg">${Object.entries(HN).map(([k,v])=>`<button class="${H==k?'on':''}" onclick="SH('${k}')">${v}</button>`).join('')}</div>${ro?'<div class="c mu">Solo puedes mirar. Pide acceso de colaborador para editar.</div>':''}`;
+let b;if(err)b=`<div class="c">${esc(err)}</div>`;else if(!ready)b='<div class="c mu">Conectando…</div>';else b=({casa:vCasa,super:vSuper,rec:vRec})[tab]();
+const sc=window.scrollY;$('#app').innerHTML=hd+b;window.scrollTo(0,sc)}
+function vCasa(){const L=mine().filter(i=>i.q>0||!(i.b>0)),low=L.filter(i=>i.m>0&&i.q<=i.m&&!(i.b>0)),val_=L.reduce((s,i)=>s+i.q*(i.p||0),0);
+return `<div class="c"><div class="mu">${HN[H]}: ${L.length} productos en la despensa</div><div class="big">${fm(val_)}</div><div class="mu">valor aproximado de lo que hay</div></div><button class="b1" style="width:100%;margin-bottom:12px" onclick="editI()">Añadir producto</button>`
++(low.length?`<div class="c"><b>⚠️ Se está acabando</b>${low.map(i=>`<div class="r"><span class="m">${esc(i.n)} <span class="mu">(${nf(i.q)} ${esc(i.u||'')})</span></span><button class="b3" onclick="toL('${i.id}')">A la lista</button></div>`).join('')}</div>`:'')
++(L.length?`<div class="c">${L.map(i=>`<div class="r"><span class="m" onclick="editI('${i.id}')"><b>${esc(i.n)}</b><span class="mu">${i.p?fm(i.p)+' c/u':'sin precio'}${i.q?' · '+fm(i.q*i.p)+' en total':''}</span></span><button class="q" onclick="dq('${i.id}',-1)">−</button><b style="min-width:42px;text-align:center">${nf(i.q)}<span class="mu" style="font-weight:400"> ${esc(i.u||'')}</span></b><button class="q" onclick="dq('${i.id}',1)">+</button></div>`).join('')}</div>`:'<p class="mu">Todavía no hay productos. Añade lo que tienes en casa.</p>')}
+function dq(id,d){const i=IT.find(x=>x.id==id);upd(id,{q:Math.max(0,nf(i.q+d))})}
+function toL(id){const i=IT.find(x=>x.id==id);upd(id,{b:Math.max(1,nf((i.m||1)*2-i.q))})}
+function editI(id){const i=id?IT.find(x=>x.id==id):{n:'',q:'',u:'und',p:'',m:''};sheet(`<h3>${id?'Editar':'Nuevo'} producto</h3><input id="in" placeholder="Nombre (ej. Arroz)" value="${esc(i.n)}"><div class="row"><input id="iq" type="number" inputmode="decimal" placeholder="Cantidad que hay" value="${i.q}"><input id="iu" placeholder="Unidad (kg, und, lb)" value="${esc(i.u||'')}"></div><input id="ip" type="number" inputmode="decimal" placeholder="Precio por unidad" value="${i.p}"><input id="im" type="number" inputmode="decimal" placeholder="Avisarme cuando queden (cantidad mínima)" value="${i.m}">${id?`<button class="sm" onclick="delI('${id}')">Eliminar producto</button>`:''}`,()=>{const n=val('in').trim();if(!n){alert('Escribe el nombre.');return false}const d={n,q:+val('iq')||0,u:val('iu').trim(),p:+val('ip')||0,m:+val('im')||0};W(()=>id?db.doc('items/'+id).update(d):db.collection('items').add({...d,h:H,b:0}))})}
+function delI(id){if(confirm('¿Eliminar este producto?')){cl();W(()=>db.doc('items/'+id).delete())}}
+function vSuper(){const L=mine().filter(i=>i.b>0),tot=L.reduce((s,i)=>s+i.b*(i.p||0),0);
+return `<div class="c"><div class="mu">Lista del súper de ${HN[H]}: ${L.length} productos</div><div class="big">${fm(tot)}</div><div class="mu">total estimado${L.some(i=>!i.p)?' (algunos sin precio)':''}</div></div><div class="row" style="margin:0 0 12px"><button class="b1" onclick="addL()">Añadir a la lista</button>${L.length?'<button class="b3" onclick="buyAll()">Compré todo</button>':''}</div>`
++(L.length?`<div class="c">${L.map(i=>`<div class="r"><span class="m"><b>${esc(i.n)}</b><span class="mu">${i.p?fm(i.p)+' c/u · '+fm(i.b*i.p):'sin precio'}</span></span><button class="q" onclick="db_('${i.id}',-1)">−</button><b style="min-width:42px;text-align:center">${nf(i.b)}<span class="mu" style="font-weight:400"> ${esc(i.u||'')}</span></b><button class="q" onclick="db_('${i.id}',1)">+</button><button class="b3" onclick="buy('${i.id}')">✔</button></div>`).join('')}</div>`:'<p class="mu">La lista está vacía. Añade productos o genérala desde una receta.</p>')}
+function db_(id,d){const i=IT.find(x=>x.id==id);upd(id,{b:Math.max(0,nf(i.b+d))})}
+function buy(id){const i=IT.find(x=>x.id==id);upd(id,{q:nf(i.q+i.b),b:0})}
+function buyAll(){if(confirm('¿Pasar todo lo de la lista a la despensa?'))mine().filter(i=>i.b>0).forEach(i=>buy(i.id))}
+function addL(){sheet('<h3>Añadir a la lista</h3><input id="ln" placeholder="Producto"><div class="row"><input id="lq" type="number" inputmode="decimal" placeholder="Cantidad" value="1"><input id="lu" placeholder="Unidad" value="und"></div><input id="lp" type="number" inputmode="decimal" placeholder="Precio por unidad (opcional)">',()=>{const n=val('ln').trim();if(!n){alert('Escribe el producto.');return false}addTo(n,+val('lq')||1,val('lu').trim(),+val('lp')||0)})}
+function addTo(n,q,u,p){const e=mine().find(i=>nrm(i.n)==nrm(n));return W(()=>e?db.doc('items/'+e.id).update({b:nf((e.b||0)+q),...(p&&!e.p?{p}:{}),...(u&&!e.u?{u}:{})}):db.collection('items').add({h:H,n,q:0,u:u||'und',p:p||0,m:0,b:q}))}
+function vRec(){const o=rec&&rec.r;return `<div class="c"><b>👩‍🍳 Receta a lista de compras</b><p class="mu">Pega la receta${LM&&LM.images?' o sube una foto':''}. La IA compara con lo que hay en ${HN[H]} y arma lo que falta.</p><textarea id="rt" placeholder="Pega aquí la receta con sus ingredientes" oninput="RT=this.value">${esc(RT)}</textarea><input id="rs" type="number" inputmode="numeric" placeholder="Para cuántas personas (opcional)" value="${esc(RS)}" oninput="RS=this.value">${LM&&LM.images?'<input id="rf" type="file" accept="image/*">':''}<button class="b1" style="width:100%;margin-top:6px" onclick="gen()" ${rec&&rec.busy?'disabled':''}>${rec&&rec.busy?'Pensando…':'Generar lista'}</button></div>`
++(rec&&rec.e?`<div class="c bad">${esc(rec.e)}</div>`:'')
++(o?`<div class="c"><b>${esc(o.receta||'Receta')}</b>${(o.faltan||[]).length?`<p class="mu">Marca lo que quieres comprar:</p>${o.faltan.map((x,k)=>`<label class="k"><input type="checkbox" id="fk${k}" checked><span>${esc(x.n)} <span class="mu">${esc(String(x.q||''))} ${esc(x.u||'')}</span></span></label>`).join('')}<button class="b1" style="width:100%;margin-top:6px" onclick="useR()">Añadir a la lista del súper</button>`:'<p class="ok">Ya tienes todo lo necesario.</p>'}${(o.tienes||[]).length?`<p class="mu">Ya tienes: ${o.tienes.map(esc).join(', ')}</p>`:''}</div>`:'')}
+async function gen(){const f=$('#rf')&&$('#rf').files[0];if(!RT.trim()&&!f){alert('Pega una receta o sube una foto.');return}rec={busy:1};draw();
+const pan=mine().filter(i=>i.q>0).map(i=>`${i.n}: ${nf(i.q)} ${i.u||''}`).join('; ')||'(vacía)';
+const pr=`Eres un asistente de cocina colombiano. Receta (texto o foto): ${RT||'(ver imagen)'}\nPorciones: ${RS||'las de la receta'}.\nDespensa actual: ${pan}\nDevuelve SOLO JSON: {"receta":"nombre","faltan":[{"n":"ingrediente","q":número,"u":"unidad"}],"tienes":["ingredientes que ya hay en cantidad suficiente"]}. En faltan solo lo que no hay o no alcanza. Nombres simples y cantidades prácticas para comprar.`;
+try{const o={};if(f)o.images=[f];const r=await SM.json(pr,o);rec={r}}catch(e){rec={e:e.code=='not_granted'?'Necesitas permitir el uso de IA para esta función.':'No se pudo generar la lista: '+(e.message||e)}}draw()}
+function useR(){const F=rec.r.faltan||[];F.forEach((x,k)=>{if($('#fk'+k)&&$('#fk'+k).checked)addTo(String(x.n),+x.q||1,String(x.u||''),0)});rec=null;RT='';tab='super';draw()}
+(async()=>{draw();const c=window.claude;if(!c){err='Abre esta página desde el enlace de Claude para conectarte.';draw();return}
+const t=setTimeout(()=>{if(!ready){err='No se pudo conectar. Verifica que hayas iniciado sesión en Claude y que tengas acceso.';draw()}},10000);
+db=await c.use('db');if(!db){clearTimeout(t);err='Inicia sesión en Claude y pide acceso para ver la información.';draw();return}
+try{const u=await c.use('user');ro=u&&u.can('data.write')===false}catch(e){}
+try{SM=await c.use('sample');if(SM)LM=await SM.limits()}catch(e){}
+db.collection('items').onSnapshot(s=>{IT=s.docs.map(d=>({id:d.id,...d.data()}));ready=1;clearTimeout(t);if($('#sh').className!='on'&&document.activeElement.tagName!='TEXTAREA'&&document.activeElement.tagName!='INPUT')draw()},e=>{err='No se pudo leer: '+e.message;draw()})})();
+</script></body></html>
